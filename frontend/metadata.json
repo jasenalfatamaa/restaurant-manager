@@ -1,0 +1,7 @@
+{
+  "name": "Rustic Roots Restaurant Manager",
+  "description": "A warm, rustic-themed restaurant management system with a customer ordering interface and a comprehensive admin dashboard for kitchen, POS, and analytics.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}
