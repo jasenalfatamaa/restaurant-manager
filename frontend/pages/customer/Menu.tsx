@@ -157,7 +157,10 @@ const Menu: React.FC = () => {
         {/* Header */}
         <header className="bg-forest text-beige px-6 py-4 shadow-lg shadow-stone-400/20 rounded-b-2xl relative z-20">
           <div className="flex justify-between items-center max-w-7xl mx-auto">
-            <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate('/')}>
+            <div className="flex items-center gap-2 cursor-pointer" onClick={() => {
+              const tid = localStorage.getItem('restaurant_table_id') || '1';
+              navigate(`/welcome?table=${tid}`);
+            }}>
               <ChevronLeft />
               <h1 className="font-serif text-xl font-bold tracking-wide">Rustic Roots</h1>
             </div>

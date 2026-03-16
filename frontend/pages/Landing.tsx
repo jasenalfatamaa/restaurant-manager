@@ -1,13 +1,29 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Utensils, Users, ArrowRight, ShieldCheck } from 'lucide-react';
+import { Utensils, Users, ArrowRight, ShieldCheck, Loader2 } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { ApiService } from '../services/api';
+import { Table } from '../types';
 
 const Landing: React.FC = () => {
     const navigate = useNavigate();
     const [selectedTable, setSelectedTable] = useState<number | null>(null);
+    const [tables, setTables] = useState<Table[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
 
-    const tables = Array.from({ length: 8 }, (_, i) => i + 1);
+    useEffect(() => {
+        const loadTables = async () => {
+            try {
+                const data = await ApiService.getTables();
+                setTables(data);
+            } catch (error) {
+                console.error("Failed to load tables", error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        loadTables();
+    }, []);
 
     const handleEnter = () => {
         if (selectedTable) {
@@ -26,34 +42,45 @@ const Landing: React.FC = () => {
                 className="relative z-10 w-full max-w-md bg-white rounded-3xl shadow-xl p-8 border border-stone-100"
             >
                 <div className="text-center mb-8">
-                    <div className="w-16 h-16 bg-terracotta rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg text-white">
+                    <div className="w-16 h-16 bg-forest rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg text-white">
                         <Utensils size={32} />
                     </div>
                     <h1 className="font-serif text-3xl font-bold text-forest mb-2">Rustic Roots</h1>
                     <div className="mb-4">
                         <span className="inline-block bg-terracotta text-white text-[10px] font-bold px-3 py-1 rounded-full shadow-sm animate-pulse">
-                            DEMO MODE
+                            DEMO MODE : CUSTOMERS SIMULATION
                         </span>
                     </div>
                     <p className="text-stone-500 text-sm">Select your table to begin the dining experience.</p>
                 </div>
 
                 {/* Table Grid */}
-                <div className="grid grid-cols-4 gap-3 mb-8">
-                    {tables.map((num) => (
-                        <button
-                            key={num}
-                            onClick={() => setSelectedTable(num)}
-                            className={`aspect-square rounded-xl flex flex-col items-center justify-center border-2 transition-all duration-300 ${selectedTable === num
-                                ? 'border-forest bg-forest text-white shadow-lg scale-105'
-                                : 'border-stone-200 bg-stone-50 text-stone-400 hover:border-terracotta hover:text-terracotta'
-                                }`}
-                        >
-                            <span className="text-xs font-bold uppercase mb-1">Meja</span>
-                            <span className="text-xl font-bold">{num}</span>
-                        </button>
-                    ))}
-                </div>
+                {isLoading ? (
+                    <div className="flex flex-col items-center justify-center py-12">
+                        <Loader2 size={40} className="text-forest animate-spin mb-4" />
+                        <p className="text-stone-400 text-sm animate-pulse">Loading tables...</p>
+                    </div>
+                ) : tables.length === 0 ? (
+                    <div className="text-center py-8">
+                        <p className="text-stone-400 italic">No tables available</p>
+                    </div>
+                ) : (
+                    <div className="grid grid-cols-4 gap-3 mb-8">
+                        {tables.map((table) => (
+                            <button
+                                key={table.id}
+                                onClick={() => setSelectedTable(table.number)}
+                                className={`aspect-square rounded-xl flex flex-col items-center justify-center border-2 transition-all duration-300 ${selectedTable === table.number
+                                    ? 'border-forest bg-forest text-white shadow-lg scale-105'
+                                    : 'border-stone-200 bg-stone-50 text-stone-400 hover:border-terracotta hover:text-terracotta'
+                                    }`}
+                            >
+                                <span className="text-xs font-bold uppercase mb-1">Meja</span>
+                                <span className="text-xl font-bold">{table.number}</span>
+                            </button>
+                        ))}
+                    </div>
+                )}
 
                 {/* Main Action */}
                 <button

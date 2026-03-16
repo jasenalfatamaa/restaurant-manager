@@ -214,6 +214,9 @@ const Kitchen: React.FC = () => {
                       </li>
                     ))}
                   </ul>
+                  <div data-testid="order-id" className="text-[10px] text-stone-400 font-mono mt-1">
+                    {order.id}
+                  </div>
                   {order.customerName && <p className="text-xs text-stone-400 mt-2">Note: Guest {order.customerName}</p>}
                 </div>
 
